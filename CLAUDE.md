@@ -52,12 +52,21 @@ project memory `headless-motion-verification`.
 
 - ✅ **Landing (`index.html`)** — animated cover (eyebrow + lockup + rising pinwheel + arrow) and the
   after-scroll intro reveal (Figma `2043:1638`); native delay-free scroll; one-direction cloud drift;
-  in-flow landing shelf (books fall in, sway, raise + recolour → clean reader paths `/chapter-N`).
-- ✅ **Menu** — right-side drawer (swipe-in, interruptible, rows-fall-away close, hamburger→X) on the
-  chapter pages + reader. `Esc` / scrim / X closes.
-- ✅ **Foreword** — reader panel `#ch0` (`.chapter-panel--foreword`, chalk, no hero, no TOC) + standalone `foreword.html`; clean path `/foreword` (special-case in `routes.js`); menu row "00 / Foreword".
+  in-flow landing shelf (**5 books**: 0 Foreword + 1–3 chapters + 4 coming soon; 1300px, scales to
+  fit narrow viewports via `--shelf-scale`; books fall in, sway, raise + recolour).
+  **Mobile (≤768px):** shelf hidden, static `.home-cards` stacked cards replace it; cover lockup
+  stacks vertically (pinwheel above title, `padding-inline: 20px`) to prevent overflow; hero
+  plays reveal once then scroll is fully native into the cards.
+- ✅ **Menu** — right-side drawer (swipe-in, interruptible, rows-fall-away close, hamburger→X) on all
+  chapter pages + reader + foreword standalone. `Esc` / scrim / X closes. **Now 5 rows**:
+  00 Foreword (with `menu_0.svg` icon) → 01 → 02 → 03 → 04 coming soon.
+- ✅ **Foreword** — reader panel `#ch0` (`.chapter-panel--foreword`, chalk, no hero, no TOC) + standalone
+  `foreword.html` (fallback only, no longer linked from live nav). Entry: shelf book 0 and mobile
+  card link to `/playbook.html` (reader top = ch0). Clean path `/foreword` maps in `routes.js` +
+  server rewrites; in-reader menu row uses `data-href="/foreword"` for wireNav smooth-scroll.
 - ✅ **Three chapter pages** on the shared chapter system — themed hero, pinned scroll-synced TOC
   (ch3 has accordion sub-rows), full copy with drawn C2/C3 diagrams + per-chapter section dividers.
+  **TOC progress bar removed** (markup + CSS + JS fill line); active-row tracking still works.
 - ✅ **Continuous reader (`playbook.html`)** — the Foreword + 3 chapters stacked with the seamless
   chapter-to-chapter scroll effect; per-chapter TOC pins coexist; rail follows the active chapter;
   menu/landing books deep-link in.

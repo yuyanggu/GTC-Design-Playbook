@@ -11,7 +11,7 @@ lessons in [gotchas.md](gotchas.md).
 |---|---|---|---|---|
 | `index.html` | Landing (cover + after-scroll reveal + landing shelf) | **No** (native scroll) | No | No |
 | `playbook.html` | Continuous reader — Foreword + all 3 chapters in one document | Yes | Yes | Yes (shared) |
-| `foreword.html`, `why-we-exist.html`, `our-point-of-view.html`, `stages-of-a-project.html` | Standalone pages (ch0/ch1/ch2/ch3) — kept as a fallback, no longer linked from any menu | Yes | Yes (duplicated) | Yes |
+| `foreword.html`, `why-we-exist.html`, `our-point-of-view.html`, `stages-of-a-project.html` | Standalone pages (ch0/ch1/ch2/ch3) — kept as a fallback, no longer linked from any live navigation | Yes | Yes (duplicated) | Yes |
 
 All chapter surfaces (standalone + reader panels) share `css/chapter.css` + `js/chapter.js`.
 **Every live menu now points at the reader** (`index.html` shelf → `playbook.html#chN`; the
@@ -25,12 +25,13 @@ reader's own drawer rows → in-page `#chN`).
   - the **after-scroll reveal**: `.home-logo` (top-left `playbook_logo.svg`) + `.intro-reveal`
     (`#pinwheelSlotScrolled` + `<h2 class="intro__head">` with two clip-wrapped `.line>span`s +
     `.intro__body` two `<p>`s);
-  - the in-flow **landing shelf** `#homeShelf` / `.home-shelf` → `.shelf__spines` + four `.book` cards.
+  - the in-flow **landing shelf** `#homeShelf` / `.home-shelf` → `.shelf__spines` + **five `.book` cards** (book 0 = Foreword, links to `/playbook.html`; books 1–3 link to `/chapter-N`; book 4 `.book--soon`).
+  - the **mobile card nav** `<nav class="home-cards">` (hidden on desktop, visible ≤768px) — five `.home-card` horizontal cards, static/no-animation, tap-to-navigate.
 
   The pinwheel is **not** in the markup — JS injects a fixed traveler (rises on load → aligns to
-  `#pinwheelSlot` → on scroll glides up to `#pinwheelSlotScrolled`). Books navigate via `data-href`
-  to `playbook.html#chN` (1→#ch1, 2→#ch2, 3→#ch3; book 4 `.book--soon` "coming soon"). This is the
-  **only** place the bookshelf `.book` system is used.
+  `#pinwheelSlot` → on scroll glides up to `#pinwheelSlotScrolled`). Books navigate: book 0 (Foreword)
+  → `/playbook.html`; books 1–3 → `/chapter-N`; book 4 `.book--soon`. This is the **only** place the
+  bookshelf `.book` system is used. See [menu.md](menu.md) for shelf specs + mobile card layout.
 
 - **`foreword.html`** — standalone Foreword fallback (ch0). No coloured hero, no TOC. Shell mirrors
   the chapter pages but uses `.page-body.foreword` instead of `.page-hero`; does not load
@@ -93,7 +94,7 @@ collide.
 - `heroFlowerSpin(root)` — wind-spin, **only if** `root` has `.hero-flower[data-spin]` (ch1 only).
 - `copyReveals(root)` — `ScrollTrigger.batch` fade-up of `.reveal`.
 - `stickyToc(root)` — the pinned TOC nav (see [gotchas.md](gotchas.md): pinning under ScrollSmoother).
-- `tableOfContents(root)` — active row + progress fill follow scroll; accordion sub-rows; click-scroll.
+- `tableOfContents(root)` — active row tracking + accordion sub-rows + click-scroll. **The `.toc__progress` fill bar has been removed** (markup, CSS, and JS width-update line); the ScrollTrigger that fires `update()` is kept so active-row and accordion still track scroll.
 - `chapterSwitch(root)` — the TOC's 4-cell chapter switcher jumps between chapters (in-page on the
   reader via `GTCRoutes`/`smoother.scrollTo`, else a full load to `/chapter-N`); same behaviour as the
   menu's `wireNav`.
@@ -122,8 +123,8 @@ and `wireNav` (`main.js`). Paths are server-rewritten — `vercel.json` (Vercel)
   - Chapter heroes: `1_Graphic.svg` (549×554 four-petal flower — ch1; **known issue:** its internal
     `clipPath` crops petals to a 549×554 box), `2_Graphic.svg` (230×229 — ch2), `3_Graphic.svg`
     (600×600 — ch3), `4_Graphic.svg` (not placed yet).
-  - `menu_{1..4}.svg` / `menu_{1..4}_hover.svg` (mono→colour icons — used by both drawer rows and
-    landing books), `book_element_{1..5}.svg` (gray shelf-spine clusters, 294px tall — landing shelf only).
+  - `menu_{0..4}.svg` / `menu_{0..4}_hover.svg` (mono→colour icons — used by both drawer rows and
+    landing books; `menu_0.*` = Foreword glyph added this session), `book_element_{1..5}.svg` (gray shelf-spine clusters, 294px tall — landing shelf only).
   - **Chapter graphics** (filenames have spaces + en-dashes → referenced URL-encoded):
     `01 Divider.svg` / `02 Divider.svg` / `03 Divider.svg` (section dividers); diagrams
     `02 Diagram 1 – Two failure nodes.svg` (C2), `03 Diagram 1 – Full Project Arc.svg`,
