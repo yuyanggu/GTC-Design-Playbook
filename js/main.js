@@ -141,7 +141,6 @@ function heroScene() {
   headSpans.forEach((s) => gsap.set(s, { y: Math.ceil(s.parentElement.getBoundingClientRect().height) + 2 }));
   gsap.set(".home-logo", { autoAlpha: 0, y: -8 });
   gsap.set(".intro__body p", { autoAlpha: 0, y: 18 });
-  gsap.set(".intro__prologue", { autoAlpha: 0, y: 18 });   // reveals with the intro text, never on the cover
 
   // Both pointer types use the SAME timed play-once model: one scroll past the threshold
   // plays the whole transition at its own fixed duration (NOT mapped to scroll speed),
@@ -156,8 +155,7 @@ function heroScene() {
     if (pinwheelProx) master.to(pinwheelProx, { scrolled: 1, duration: 0.95, ease: "power3.inOut" }, 0.1);
     master
       .to(".home-logo", { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 0.4)
-      .to(".intro__body p", { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.14, ease: "power2.out" }, 0.78)
-      .to(".intro__prologue", { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" }, 1.05);
+      .to(".intro__body p", { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.14, ease: "power2.out" }, 0.78);
     hbSpines.forEach((s, i) => master.to(s, { y: 0, duration: 0.55, ease: "power2.out" }, 0.5 + i * 0.05));
     hbBooks.forEach((b, i) => {
       master
