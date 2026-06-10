@@ -154,7 +154,6 @@ function stickyToc(root) {
    under the section you're currently reading, and the active sub-row tracks scroll. ---- */
 function tableOfContents(root) {
   const lis = gsap.utils.toArray(root.querySelectorAll(".toc__list > li"));
-  const fill = root.querySelector(".toc__progress-fill");
   if (!lis.length) return;
   const smoother = window.ScrollSmoother && window.ScrollSmoother.get();
 
@@ -206,16 +205,13 @@ function tableOfContents(root) {
     }
   }
 
-  // Progress fill across the body, with a small visible baseline at the top.
+  // Active-row + accordion tracking across the body as you scroll.
   const body = root.querySelector(".page-body");
   ScrollTrigger.create({
     trigger: body,
     start: "top top",
     end: "bottom bottom",
-    onUpdate: (self) => {
-      if (fill) fill.style.width = (8 + self.progress * 92).toFixed(1) + "%";
-      update();
-    },
+    onUpdate: update,
   });
   expand(0, false); // initial accordion state
   update();
