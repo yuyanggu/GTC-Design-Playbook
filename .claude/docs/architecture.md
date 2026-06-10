@@ -10,8 +10,8 @@ lessons in [gotchas.md](gotchas.md).
 | Page(s) | What it is | ScrollSmoother? | Has `#menu`? | Has topbar/rail? |
 |---|---|---|---|---|
 | `index.html` | Landing (cover + after-scroll reveal + landing shelf) | **No** (native scroll) | No | No |
-| `playbook.html` | Continuous reader — all 3 chapters in one document | Yes | Yes | Yes (shared) |
-| `why-we-exist.html`, `our-point-of-view.html`, `stages-of-a-project.html` | Standalone chapter pages (ch1/ch2/ch3) — kept as a fallback, no longer linked from any menu | Yes | Yes (duplicated) | Yes |
+| `playbook.html` | Continuous reader — Foreword + all 3 chapters in one document | Yes | Yes | Yes (shared) |
+| `foreword.html`, `why-we-exist.html`, `our-point-of-view.html`, `stages-of-a-project.html` | Standalone pages (ch0/ch1/ch2/ch3) — kept as a fallback, no longer linked from any menu | Yes | Yes (duplicated) | Yes |
 
 All chapter surfaces (standalone + reader panels) share `css/chapter.css` + `js/chapter.js`.
 **Every live menu now points at the reader** (`index.html` shelf → `playbook.html#chN`; the
@@ -32,6 +32,10 @@ reader's own drawer rows → in-page `#chN`).
   to `playbook.html#chN` (1→#ch1, 2→#ch2, 3→#ch3; book 4 `.book--soon` "coming soon"). This is the
   **only** place the bookshelf `.book` system is used.
 
+- **`foreword.html`** — standalone Foreword fallback (ch0). No coloured hero, no TOC. Shell mirrors
+  the chapter pages but uses `.page-body.foreword` instead of `.page-hero`; does not load
+  `routes.js`. `js/chapter.js`'s init guard was broadened to cover it so `copyReveals` runs.
+
 - **Standalone chapter pages** — one shared skeleton: fixed `.topbar` (logo → home; hamburger
   `data-menu-open` → Menu) + fixed `.rail` (outside `#smooth-wrapper`) + `#smooth-wrapper >
   main.page` (`.page-hero` cover + `.page-body` with `.toc` and `.copy`) + the duplicated `#menu`
@@ -39,10 +43,7 @@ reader's own drawer rows → in-page `#chN`).
   vars, rail label, hero title `<span>`s, hero `<img>` src, TOC rows, and copy. Copy is transcribed
   from `playbook-content/playbook-outline__5_.html` (source content, not served).
 
-- **`playbook.html`** — the continuous reader. All three chapters in ONE document, each wrapped in
-  `.section.chapter-panel > .chapter-panel__scale` (ids `#ch1/#ch2/#ch3`; theme vars +
-  `data-rail`/`data-rail-fg` on the panel) so scrolling flows seamlessly chapter→chapter. One shared
-  rail + one `#menu` + one ScrollSmoother. See [reader.md](reader.md).
+- **`playbook.html`** — the continuous reader. The Foreword (`#ch0`, `.chapter-panel--foreword`, no hero/TOC) followed by all three chapters, each wrapped in `.section.chapter-panel > .chapter-panel__scale` (ids `#ch0`–`#ch3`; theme vars + `data-rail`/`data-rail-fg` on the panel) so scrolling flows seamlessly. One shared rail + one `#menu` + one ScrollSmoother. See [reader.md](reader.md).
 
 **The `#menu` drawer block is duplicated verbatim** into every page that has one (the 3 chapter
 pages + `playbook.html`); the only per-page difference is each row's `data-href` (standalone →
@@ -104,11 +105,13 @@ collide.
 
 Classic `<head>` script (loaded before `gate.js`'s siblings and the modules) exposing
 `window.GTCRoutes` (`idToPath`/`pathToId`/`isReaderPath`). One `SECTION_SLUGS` table is the source of
-truth mapping `#s-XY` ids ⇄ `/chapter-N/<slug>` paths (chapters derive `/chapter-N`). Read by the
-anti-flash inline script, `handleDeepLink`/`urlSync` (`chapter.js`), and `wireNav` (`main.js`). Paths
-are server-rewritten — `vercel.json` (Vercel) + `_redirects` (Netlify/CF) map `/chapter-*` →
-`/playbook.html`; `playbook.html` carries `<base href="/">` so its relative assets survive a
-two-segment path. Full scheme + traps in [reader.md](reader.md) and [gotchas.md](gotchas.md).
+truth mapping `#s-XY` ids ⇄ `/chapter-N/<slug>` paths (chapters derive `/chapter-N`). **Special
+case:** `ch0` maps to `/foreword` (not `/chapter-0`); `isReaderPath` matches `/foreword` in addition
+to `/chapter-*`. Read by the anti-flash inline script, `handleDeepLink`/`urlSync` (`chapter.js`),
+and `wireNav` (`main.js`). Paths are server-rewritten — `vercel.json` (Vercel) + `_redirects`
+(Netlify/CF) map `/chapter-*` and `/foreword` → `/playbook.html`; `playbook.html` carries
+`<base href="/">` so its relative assets survive a two-segment path. Full scheme + traps in
+[reader.md](reader.md) and [gotchas.md](gotchas.md).
 
 ## Other directories
 

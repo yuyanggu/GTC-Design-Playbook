@@ -11,6 +11,15 @@ hero title `<span>`s, hero `<img>` src (+ `data-spin` to animate), the `.toc` ro
 content. Edits to diagrams/copy must be **mirrored in both** the standalone page and the matching
 `playbook.html` panel.
 
+### Foreword (chapter 0) — no-hero / no-TOC variant
+
+`foreword.html` (standalone) / reader panel `#ch0` (`.chapter-panel--foreword`). Unlike the three
+chapters it has **no coloured hero and no TOC**: a `.foreword__title` sits top-left on the chalk
+background, followed by a full-width orb banner image (`assets/foreword_Graphic.png`) via
+`.foreword__graphic`, then the standard offset `.copy` column. `js/chapter.js`'s standalone-init
+guard was broadened to `document.querySelector(".page-hero, .page-body.foreword")` so `copyReveals`
+still runs on the no-hero page. In the reader the clean URL is `/foreword` (a `routes.js` special-case).
+
 ## Layout (reference 1440)
 
 - The rail is `position:fixed` (outside `#smooth-wrapper`).

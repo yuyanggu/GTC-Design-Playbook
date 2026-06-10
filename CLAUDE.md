@@ -4,10 +4,10 @@ A polished, awwwards-grade **static multi-page website** for the GovTech Consult
 Playbook. Plain HTML/CSS/vanilla JS, no build step, fully offline-capable.
 
 The site has three surfaces: the **landing** (`index.html` — animated cover, after-scroll intro
-reveal, and an in-flow bookshelf), the **continuous reader** (`playbook.html` — all three chapters
-in one document with a seamless chapter-to-chapter scroll effect; the canonical experience), and the
-**standalone chapter pages** (kept as a fallback, no longer linked). A right-side **drawer Menu**
-opens from any hamburger/Explore button.
+reveal, and an in-flow bookshelf), the **continuous reader** (`playbook.html` — opens with the
+Foreword (`#ch0`), then all three chapters, in one document with a seamless scroll effect; the
+canonical experience), and the **standalone pages** (Foreword + ch1–ch3, kept as a fallback, no
+longer linked). A right-side **drawer Menu** opens from any hamburger/Explore button.
 
 ## Detailed docs (`.claude/docs/`)
 
@@ -55,9 +55,10 @@ project memory `headless-motion-verification`.
   in-flow landing shelf (books fall in, sway, raise + recolour → clean reader paths `/chapter-N`).
 - ✅ **Menu** — right-side drawer (swipe-in, interruptible, rows-fall-away close, hamburger→X) on the
   chapter pages + reader. `Esc` / scrim / X closes.
+- ✅ **Foreword** — reader panel `#ch0` (`.chapter-panel--foreword`, chalk, no hero, no TOC) + standalone `foreword.html`; clean path `/foreword` (special-case in `routes.js`); menu row "00 / Foreword".
 - ✅ **Three chapter pages** on the shared chapter system — themed hero, pinned scroll-synced TOC
   (ch3 has accordion sub-rows), full copy with drawn C2/C3 diagrams + per-chapter section dividers.
-- ✅ **Continuous reader (`playbook.html`)** — the 3 chapters stacked with the seamless
+- ✅ **Continuous reader (`playbook.html`)** — the Foreword + 3 chapters stacked with the seamless
   chapter-to-chapter scroll effect; per-chapter TOC pins coexist; rail follows the active chapter;
   menu/landing books deep-link in.
 - All surfaces: responsive + reduced-motion, no console errors.
