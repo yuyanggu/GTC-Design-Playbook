@@ -220,72 +220,85 @@ body { background: var(--chalk); }
   width: 328px;
   margin-left: 132px;
 }
-/* Chapter switcher — four cells that jump between chapters (same behaviour as the
-   menu). The cell for the chapter you're in is accent-filled and shows its colour
-   icon; the others are grey with the mono icon. Cell 4 is "coming soon" (inert). */
-.toc__chapters {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 2px;
-  width: 100%;
-  margin: 0 0 32px;
+/* Inner scroll viewport — on desktop (pinned) the stack is capped to the viewport
+   and slides under soft fade masks while JS keeps the active row centred
+   (tableOfContents). The mask only applies while the stack actually overflows
+   (.is-overflowing, toggled by JS), so short chapters keep crisp edges. */
+.toc__scroll { position: relative; }
+@media (min-width: 1181px) {
+  .toc__scroll {
+    max-height: calc(100vh - 160px);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .toc__scroll::-webkit-scrollbar { display: none; }
+  .toc__scroll.is-overflowing {
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, #000 48px, #000 calc(100% - 48px), transparent 100%);
+  }
 }
-.toc__chapter {
-  position: relative;
+
+/* Chapter stack — every chapter is a quiet text row; the one you're reading turns
+   accent and carries its section list nested beneath it. Rows with a data-href
+   jump between chapters (chapterSwitch, same behaviour as the menu); the current
+   row + the "coming soon" row are inert. */
+.toc__chapters {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  height: 100px;
-  padding: 9px 0 14px;
-  background: #b8bdb9;
-  text-decoration: none;
-  transition: background 0.3s ease;
 }
-.toc__chapter:hover { background: #a9aea4; }
-.toc__chapter:focus-visible { outline: 3px solid var(--midnight); outline-offset: 2px; }
+.toc__chapters > li { padding: 16px 0; }
+.toc__chapters > li + li { border-top: 1px solid rgba(1, 34, 51, 0.14); }
+.toc__chapter {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  text-decoration: none;
+  color: rgba(1, 34, 51, 0.42);
+  transition: color 0.25s ease;
+}
+a.toc__chapter:hover { color: var(--midnight); }
+.toc__chapter:focus-visible { outline: 2px solid var(--midnight); outline-offset: 2px; }
 .toc__chapter-num {
+  flex: none;
+  min-width: 12px;
   font-family: var(--font-display);
   font-weight: 400;
   font-size: 15px;
   line-height: 1;
-  color: var(--midnight);
 }
-.toc__chapter-icon {
-  position: relative;
-  flex: 1;
-  width: 38px;
-  margin-top: 8px;
-}
-.toc__chapter-icon img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  transition: opacity 0.3s ease;
-}
-.toc__chapter-icon-hover { opacity: 0; }
-/* Current chapter — accent fill, colour icon, no jump. */
-.toc__chapter.is-current { background: var(--accent, var(--orange)); pointer-events: none; }
-.toc__chapter.is-current .toc__chapter-icon-base { opacity: 0; }
-.toc__chapter.is-current .toc__chapter-icon-hover { opacity: 1; }
-/* Chapter 4 — not built yet (mirrors the menu's "coming soon" row). */
-.toc__chapter--soon { pointer-events: none; }
-
-/* Chapter title — the big display title for the chapter you're reading. */
-.toc__chapter-title {
-  margin: 0 0 24px;
+.toc__chapter-name {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 24px;
+  font-size: 17px;
   line-height: 1.5;
-  color: var(--accent, var(--orange));
+}
+/* Current chapter — accent, inert (you are here). */
+.toc__chapter.is-current { color: var(--accent, var(--orange)); pointer-events: none; }
+/* Chapter 4 — not built yet (mirrors the menu's "coming soon" row). */
+.toc__chapter--soon { pointer-events: none; }
+.toc__chapter-soon {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 3px 7px 2px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  vertical-align: 3px;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
+/* Section list — nested under the current chapter's row. */
 .toc__list {
   list-style: none;
-  margin: 18px 0 0;
-  padding: 0;
+  margin: 8px 0 0;
+  padding: 0 0 0 26px;
   display: flex;
   flex-direction: column;
 }
@@ -338,7 +351,7 @@ body { background: var(--chalk); }
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 6px 0 6px 50px;
+  padding: 6px 0 6px 38px;
   text-decoration: none;
 }
 .toc__subrow::before {
@@ -358,6 +371,118 @@ body { background: var(--chalk); }
   color: rgba(1, 34, 51, 0.4);
 }
 .toc__subrow.is-active .toc__subtitle { color: var(--midnight); }
+
+/* ----- Mobile section bar (≤768px) -----
+   On phones the inline TOC disappears and a fixed bar pinned to the viewport
+   bottom takes over: ◀ [ 3.1 · how we engage ] ▶. Its markup lives OUTSIDE
+   #smooth-wrapper (fixed elements can't survive the ScrollSmoother transform);
+   js/chapter.js (mobileTocBar) builds the heading list from the .toc navs,
+   drives the label, and wires the arrows + the slide-up sheet. */
+.toc-bar, .toc-sheet { display: none; }
+
+@media (max-width: 768px) {
+  .toc { display: none; }
+  /* Keep the page end (footer block) clear of the fixed bar. */
+  .page { padding-bottom: calc(56px + env(safe-area-inset-bottom)); }
+
+  .toc-bar {
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 46;            /* above the rail (40) + sheet (45), below the menu (50) */
+    display: flex;
+    align-items: stretch;
+    height: calc(56px + env(safe-area-inset-bottom));
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--midnight);
+    color: var(--chalk);
+  }
+  .toc-bar[hidden] { display: none; }
+  .toc-bar__arrow {
+    flex: none;
+    width: 56px;
+    display: grid;
+    place-items: center;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .toc-bar__arrow:disabled { opacity: 0.3; cursor: default; }
+  .toc-bar__arrow svg { display: block; }
+  .toc-bar__label {
+    flex: 1;
+    min-width: 0;             /* lets the title ellipsise instead of overflowing */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 12px;
+    border: 0;
+    border-inline: 1px solid rgba(246, 242, 231, 0.16);
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+  .toc-bar__num {
+    flex: none;
+    font-family: var(--font-display);
+    font-size: 13px;
+    line-height: 1;
+    color: var(--bar-accent, var(--orange));
+  }
+  .toc-bar__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-sans);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: -0.26px;
+    text-transform: uppercase;
+  }
+
+  /* Slide-up TOC sheet — the stacked-chapter index (same .toc__* rows as the
+     desktop TOC) on a chalk panel anchored just above the bar; a scrim covers
+     the page behind. Opened by tapping the bar label. */
+  .toc-sheet {
+    display: block;
+    position: fixed;
+    inset: 0 0 calc(56px + env(safe-area-inset-bottom)) 0;
+    z-index: 45;
+    pointer-events: none;
+  }
+  .toc-sheet__scrim {
+    position: absolute;
+    inset: 0;
+    background: rgba(1, 34, 51, 0.45);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .toc-sheet__panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-height: min(70vh, 100%);
+    overflow-y: auto;
+    scrollbar-width: none;
+    padding: 14px 22px 20px;
+    background: var(--chalk);
+    border-radius: 14px 14px 0 0;
+    transform: translateY(102%);
+    transition: transform 0.34s cubic-bezier(0.32, 0.72, 0.25, 1);
+  }
+  .toc-sheet__panel::-webkit-scrollbar { display: none; }
+  .toc-sheet.is-open { pointer-events: auto; }
+  .toc-sheet.is-open .toc-sheet__scrim { opacity: 1; }
+  .toc-sheet.is-open .toc-sheet__panel { transform: translateY(0); }
+  /* Inside the sheet every chapter's sub-rows are simply open (no accordion). */
+  .toc-sheet .toc__sub { height: auto; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc-sheet__scrim, .toc-sheet__panel { transition: none; }
+}
 
 /* ----- Body copy (right column) ----- */
 .copy {
@@ -411,7 +536,7 @@ body { background: var(--chalk); }
 
 /* Sub-section heading — named sub-points within a section (secondary to .section-head) */
 .subsection-head {
-  margin: 1.5em 0 0.5em;
+  margin: 2em 0 0.5em;
   font-family: var(--font-sans);
   font-weight: 600;
   font-size: clamp(1.25rem, 1.6vw, 1.375rem);   /* H4 — 22px max, rem-based */
@@ -595,7 +720,6 @@ body { background: var(--chalk); }
     margin: 0 auto 56px;
     padding-left: 84px;
   }
-  .toc__chapters, .toc__chapter-title { max-width: 360px; }
   .copy {
     margin-left: 0;
     width: auto;

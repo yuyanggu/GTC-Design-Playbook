@@ -40,27 +40,53 @@ only, via `heroFlowerSpin`) sized `min(700px,70vw)` × `--flower-aspect` (ch1 `5
 
 ## TOC (`.toc`)
 
-Pinned nav (`stickyToc`). Top to bottom (redesign, Figma `2118:4187`):
+Pinned nav (`stickyToc`). Structure (stacked-chapter redesign, 2026-06):
 
-- **`.toc__chapters`** — a 4-cell chapter switcher (grid of 4) that jumps between chapters, same
-  behaviour as the drawer menu (`chapterSwitch` in `js/chapter.js`). The current chapter's cell is
-  `.is-current` (accent fill + the colour icon `menu_N_hover.svg`, `pointer-events:none` → no-op);
-  the others are grey with the mono `menu_N.svg`. Cell 4 is `.toc__chapter--soon` (inert, mirrors the
-  menu's "coming soon" row). Link cells carry `data-href="/chapter-N"`; `chapterSwitch` resolves via
-  `GTCRoutes.pathToId` → `smoother.scrollTo` in-page (reader), else a full load to `/chapter-N`
-  (standalone pages, where `GTCRoutes` is absent).
-- **`.toc__chapter-title`** — the chapter title, Boldonse 24px `--accent` (full titles; ch1 wraps to
-  two lines).
-- **`.toc__progress` / `.toc__progress-fill`** — scroll-driven progress bar (grey track + accent fill).
-- **`.toc__list`** — section rows separated by thin horizontal rules (`li + li` border-top). Each
-  `.toc__row` is num (Boldonse) + vertical `.toc__rule` + `.toc__title` (DM Sans **700**, uppercase,
-  `-0.32px`); the active row turns `--accent` (no fill). Optional **accordion sub-rows**: each `<li>`
-  may hold a `.toc__sub` of `.toc__subrow`s (accent diamond bullet + Source Serif 14px) that open only
-  while that section is active (`tableOfContents` animates its `height`); the active sub-row is full
-  midnight, the rest dimmed. Active main/sub track scroll off each heading's id (`#s-31`, `#s-31-1`, …).
+- **`.toc__scroll`** — inner scroll viewport wrapping everything. On desktop (>1180px) it's capped
+  to `calc(100vh - 160px)` with a hidden scrollbar; while the stack overflows, JS adds
+  `.is-overflowing` → a CSS `mask-image` fades ~48px at the top + bottom edges, and
+  `tableOfContents` tweens `scrollTop` to keep the active (sub-)row vertically centred. The follow
+  tween recomputes its target every frame, so accordion height changes can't strand it; the
+  overflow class re-syncs on `ScrollTrigger` refresh **and** when an accordion finishes opening/
+  closing. Inner `scrollTop` never fights the pin.
+- **`.toc__chapters`** — a vertical `<ul>`: every chapter is a quiet Boldonse text row
+  (`.toc__chapter` = `.toc__chapter-num` + `.toc__chapter-name`, thin rules between blocks).
+  Non-current rows are muted midnight (hover → full) and carry `data-href="/chapter-N"`
+  (`chapterSwitch`, same behaviour as the drawer menu: in-page via `GTCRoutes` in the reader, full
+  load on standalone pages). The current row is `is-current` (accent, inert) and **nests the
+  chapter's `.toc__list` beneath it**; row 4 is `.toc__chapter--soon` with a `.toc__chapter-soon`
+  "soon" pill. The old 4-cell icon grid + `.toc__chapter-title` were dropped in this redesign.
+- **`.toc__list`** — section rows (unchanged): `.toc__row` = num (Boldonse) + vertical `.toc__rule`
+  + `.toc__title` (DM Sans 700, uppercase); the active row turns `--accent`. Optional **accordion
+  sub-rows**: a `.toc__sub` of `.toc__subrow`s (accent diamond + Source Serif) opens only while its
+  section is active; the active sub-row is full midnight, the rest dimmed; inactive sections'
+  sub-rows get their stale `is-active` cleared. Indented 26px under the chapter row. Active main/sub
+  track scroll off each heading's id (`#s-31`, `#s-31-1`, …).
 
-The old `.toc__label` ("table of contents") and `.toc__skeleton` book-spine bars were **dropped** in
-the redesign.
+≤768px the whole `.toc` is hidden — the mobile section bar below replaces it.
+
+## Mobile section bar (`.toc-bar` + `.toc-sheet`, ≤768px)
+
+A fixed bar at the viewport bottom — `◀ [ 3.1 · section title ] ▶`, midnight bg, number in the
+chapter accent (`--bar-accent`). Markup sits **outside `#smooth-wrapper`** (fixed elements can't
+survive the smoother transform) in the 3 chapter pages + `playbook.html` (`foreword.html` fallback
+skipped); z-order: scrim/sheet 45 · bar 46 (rail 40 < these < menu 50). `mobileTocBar()` in
+`js/chapter.js` (one per document, both boot branches) drives it:
+
+- **Heading list** built from the `.toc` navs' `[data-toc]` rows in DOM order — single source of
+  truth with the desktop TOC — plus a hand-rolled `0 · Foreword` entry for `#ch0` in the reader.
+- **Label** tracks the deepest heading above the 42%-viewport line (same rule as the TOC/urlSync);
+  per-heading accent is resolved from its `.chapter-panel` (reader) or `document.body` (standalone).
+- **Arrows** step heading-to-heading (sections + subsections, crossing chapters in the reader).
+  Cross-chapter jumps **re-aim after the smooth scroll stops** (up to 6 corrections): the panel
+  transitions' `pinSpacing:false` consumes scroll without moving layout, so one rect-measured
+  `scrollTo` undershoots — same reason `handleDeepLink` converges. Any wheel/touch input cancels.
+- **Tapping the label** slides up `.toc-sheet` (scrim + chalk panel anchored above the bar): the
+  full stacked-chapter index, cloned from the `.toc` navs at boot — sub-lists forced open (inline
+  accordion heights stripped), per-chapter `--accent` set inline on each block, all `is-current`/
+  `is-active` cleared then re-synced (+ auto-scrolled to the active row) on open. Section/sub rows
+  jump in-page; chapter rows resolve like the menu. Esc / scrim / label closes; `aria-expanded`
+  reflects state.
 
 ## Copy blocks (in `.copy`, accent/midnight on chalk, Source Serif body)
 

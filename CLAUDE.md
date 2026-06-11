@@ -64,9 +64,14 @@ project memory `headless-motion-verification`.
   `foreword.html` (fallback only, no longer linked from live nav). Entry: shelf book 0 and mobile
   card link to `/playbook.html` (reader top = ch0). Clean path `/foreword` maps in `routes.js` +
   server rewrites; in-reader menu row uses `data-href="/foreword"` for wireNav smooth-scroll.
-- ✅ **Three chapter pages** on the shared chapter system — themed hero, pinned scroll-synced TOC
-  (ch3 has accordion sub-rows), full copy with drawn C2/C3 diagrams + per-chapter section dividers.
-  **TOC progress bar removed** (markup + CSS + JS fill line); active-row tracking still works.
+- ✅ **Three chapter pages** on the shared chapter system — themed hero, pinned scroll-synced TOC,
+  full copy with drawn C2/C3 diagrams + per-chapter section dividers. **TOC redesigned (2026-06)**
+  as a stacked chapter index: all chapters as vertical Boldonse rows, the current one accent +
+  expanded with its section list (ch2/ch3 have accordion sub-rows); on desktop the stack is capped
+  (~100vh−160px) with top/bottom fade masks and follow-scroll centring the active row. **≤768px the
+  TOC is replaced by a fixed bottom section bar** (`.toc-bar`: prev/next arrows step through every
+  heading — across chapters in the reader — label opens a slide-up `.toc-sheet` full index), on the
+  3 chapter pages + the reader. TOC progress bar previously removed; active-row tracking works.
 - ✅ **Continuous reader (`playbook.html`)** — the Foreword + 3 chapters stacked with the seamless
   chapter-to-chapter scroll effect; per-chapter TOC pins coexist; rail follows the active chapter;
   menu/landing books deep-link in.

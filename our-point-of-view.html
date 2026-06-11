@@ -32,6 +32,26 @@
     <p class="rail__label">our point of view</p>
   </div>
 
+  <!-- Mobile section bar (≤768px) — pinned to the viewport bottom; the arrows step
+       heading-to-heading and the label opens the TOC sheet. Driven by js/chapter.js
+       (mobileTocBar). Fixed elements must live outside #smooth-wrapper. -->
+  <nav class="toc-bar" aria-label="Sections" hidden>
+    <button class="toc-bar__arrow toc-bar__arrow--prev" type="button" aria-label="Previous section">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6" /></svg>
+    </button>
+    <button class="toc-bar__label" type="button" aria-expanded="false" aria-controls="toc-sheet" aria-haspopup="dialog">
+      <span class="toc-bar__num"></span>
+      <span class="toc-bar__title"></span>
+    </button>
+    <button class="toc-bar__arrow toc-bar__arrow--next" type="button" aria-label="Next section">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6" /></svg>
+    </button>
+  </nav>
+  <div class="toc-sheet" id="toc-sheet" role="dialog" aria-label="Table of contents">
+    <div class="toc-sheet__scrim"></div>
+    <div class="toc-sheet__panel"></div>
+  </div>
+
   <div id="smooth-wrapper">
     <div id="smooth-content">
   <main class="page">
@@ -57,69 +77,66 @@
 
        <div class="body-left">
         <nav class="toc" aria-label="Table of contents">
-          <div class="toc__chapters" aria-label="Jump to chapter">
-            <a class="toc__chapter" data-href="/chapter-1" href="/chapter-1" aria-label="Chapter 1: Why we exist, and the moment">
-              <span class="toc__chapter-num">1</span>
-              <span class="toc__chapter-icon" aria-hidden="true">
-                <img class="toc__chapter-icon-base" src="assets/menu_1.svg" alt="" />
-                <img class="toc__chapter-icon-hover" src="assets/menu_1_hover.svg" alt="" />
-              </span>
-            </a>
-            <span class="toc__chapter is-current" aria-current="true" aria-label="Chapter 2: Our point of view">
-              <span class="toc__chapter-num">2</span>
-              <span class="toc__chapter-icon" aria-hidden="true">
-                <img class="toc__chapter-icon-base" src="assets/menu_2.svg" alt="" />
-                <img class="toc__chapter-icon-hover" src="assets/menu_2_hover.svg" alt="" />
-              </span>
-            </span>
-            <a class="toc__chapter" data-href="/chapter-3" href="/chapter-3" aria-label="Chapter 3: Stages of a project">
-              <span class="toc__chapter-num">3</span>
-              <span class="toc__chapter-icon" aria-hidden="true">
-                <img class="toc__chapter-icon-base" src="assets/menu_3.svg" alt="" />
-                <img class="toc__chapter-icon-hover" src="assets/menu_3_hover.svg" alt="" />
-              </span>
-            </a>
-            <span class="toc__chapter toc__chapter--soon" aria-disabled="true" aria-label="Chapter 4: How we work as a team (coming soon)">
-              <span class="toc__chapter-num">4</span>
-              <span class="toc__chapter-icon" aria-hidden="true">
-                <img class="toc__chapter-icon-base" src="assets/menu_4.svg" alt="" />
-              </span>
-            </span>
+          <div class="toc__scroll">
+            <ul class="toc__chapters">
+              <li>
+                <a class="toc__chapter" data-href="/chapter-1" href="/chapter-1">
+                  <span class="toc__chapter-num">1</span>
+                  <span class="toc__chapter-name">Why we exist, and the moment</span>
+                </a>
+              </li>
+              <li>
+                <span class="toc__chapter is-current" aria-current="true">
+                  <span class="toc__chapter-num">2</span>
+                  <span class="toc__chapter-name">Our point of view</span>
+                </span>
+                <ul class="toc__list">
+                  <li>
+                    <a class="toc__row is-active" data-toc="s-21" href="#s-21">
+                      <span class="toc__num">2.1</span>
+                      <span class="toc__rule" aria-hidden="true"></span>
+                      <span class="toc__title">Designing for everyone</span>
+                    </a>
+                    <ul class="toc__sub">
+                      <li><a class="toc__subrow" data-toc="s-21-1" href="#s-21-1"><span class="toc__subtitle">Fairness by design</span></a></li>
+                      <li><a class="toc__subrow" data-toc="s-21-2" href="#s-21-2"><span class="toc__subtitle">Siloed by mandate, experienced as one</span></a></li>
+                      <li><a class="toc__subrow" data-toc="s-21-3" href="#s-21-3"><span class="toc__subtitle">Policy, procurement, governance</span></a></li>
+                      <li><a class="toc__subrow" data-toc="s-21-4" href="#s-21-4"><span class="toc__subtitle">Designing for those who deliver</span></a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a class="toc__row" data-toc="s-22" href="#s-22">
+                      <span class="toc__num">2.2</span>
+                      <span class="toc__rule" aria-hidden="true"></span>
+                      <span class="toc__title">What we believe</span>
+                    </a>
+                    <ul class="toc__sub">
+                      <li><a class="toc__subrow" data-toc="s-22-1" href="#s-22-1"><span class="toc__subtitle">What we’re still working out</span></a></li>
+                    </ul>
+                  </li>
+                  <li>
+                    <a class="toc__row" data-toc="s-23" href="#s-23">
+                      <span class="toc__num">2.3</span>
+                      <span class="toc__rule" aria-hidden="true"></span>
+                      <span class="toc__title">What success looks like</span>
+                    </a>
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <a class="toc__chapter" data-href="/chapter-3" href="/chapter-3">
+                  <span class="toc__chapter-num">3</span>
+                  <span class="toc__chapter-name">Stages of a project</span>
+                </a>
+              </li>
+              <li>
+                <span class="toc__chapter toc__chapter--soon" aria-disabled="true">
+                  <span class="toc__chapter-num">4</span>
+                  <span class="toc__chapter-name">How we work as a team <span class="toc__chapter-soon">soon</span></span>
+                </span>
+              </li>
+            </ul>
           </div>
-          <p class="toc__chapter-title">Our point of view</p>
-
-          <ul class="toc__list">
-            <li>
-              <a class="toc__row is-active" data-toc="s-21" href="#s-21">
-                <span class="toc__num">2.1</span>
-                <span class="toc__rule" aria-hidden="true"></span>
-                <span class="toc__title">Designing for everyone</span>
-              </a>
-              <ul class="toc__sub">
-                <li><a class="toc__subrow" data-toc="s-21-1" href="#s-21-1"><span class="toc__subtitle">Fairness by design</span></a></li>
-                <li><a class="toc__subrow" data-toc="s-21-2" href="#s-21-2"><span class="toc__subtitle">Siloed by mandate, experienced as one</span></a></li>
-                <li><a class="toc__subrow" data-toc="s-21-3" href="#s-21-3"><span class="toc__subtitle">Policy, procurement, governance</span></a></li>
-                <li><a class="toc__subrow" data-toc="s-21-4" href="#s-21-4"><span class="toc__subtitle">Designing for those who deliver</span></a></li>
-              </ul>
-            </li>
-            <li>
-              <a class="toc__row" data-toc="s-22" href="#s-22">
-                <span class="toc__num">2.2</span>
-                <span class="toc__rule" aria-hidden="true"></span>
-                <span class="toc__title">What we believe</span>
-              </a>
-              <ul class="toc__sub">
-                <li><a class="toc__subrow" data-toc="s-22-1" href="#s-22-1"><span class="toc__subtitle">What we’re still working out</span></a></li>
-              </ul>
-            </li>
-            <li>
-              <a class="toc__row" data-toc="s-23" href="#s-23">
-                <span class="toc__num">2.3</span>
-                <span class="toc__rule" aria-hidden="true"></span>
-                <span class="toc__title">What success looks like</span>
-              </a>
-            </li>
-          </ul>
         </nav>
        </div><!-- /.body-left -->
 
