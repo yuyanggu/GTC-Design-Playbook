@@ -495,24 +495,42 @@ a.toc__chapter:hover { color: var(--midnight); }
     display: block;
     padding: 0;
   }
-  .topbar::before {
+  /* Two stacked layers fill the band: a frosted backdrop blur (::after) under a
+     chalk tint (::before). Together they let scrolling body copy fade AND blur
+     out beneath the logo/hamburger instead of clashing. Both dissolve down the
+     band and both switch off over a coloured hero (html.topbar-clear). */
+  .topbar::before,
+  .topbar::after {
     content: "";
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: calc(92px + env(safe-area-inset-top));
+    height: calc(200px + env(safe-area-inset-top));
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  /* Frosted glass — gradient-masked so the blur is strongest up top and fades to
+     none before the band ends (no hard cut-off line). Sits below the chalk tint. */
+  .topbar::after {
+    z-index: 41;
+    -webkit-backdrop-filter: blur(7px);
+    backdrop-filter: blur(7px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0, #000 30%, transparent 62%);
+    mask-image: linear-gradient(to bottom, #000 0, #000 30%, transparent 62%);
+  }
+  /* Chalk tint on top of the frost. */
+  .topbar::before {
     z-index: 42;
     background: linear-gradient(
       to bottom,
       var(--chalk) 0,
-      var(--chalk) 50%,
+      var(--chalk) 10%,
       rgba(246, 242, 231, 0) 100%
     );
-    pointer-events: none;
-    transition: opacity 0.3s ease;
   }
-  html.topbar-clear .topbar::before { opacity: 0; }
+  html.topbar-clear .topbar::before,
+  html.topbar-clear .topbar::after { opacity: 0; }
 
   .topbar__logo {
     position: fixed;
@@ -789,4 +807,25 @@ a.toc__chapter:hover { color: var(--midnight); }
      width (left + right) so wrapping engages, and re-enable normal wrapping. */
   .page-hero__title { right: clamp(22px, 5vw, 44px); }
   .page-hero__title span { white-space: normal; }
+}
+
+/* Reader on mobile (≤768): drop the left rail and let the copy run the full width
+   with even side padding (matching the logo's inset) instead of being indented to
+   clear the rail. After the ≤1180/≤680 blocks so it overrides their rail offsets. */
+@media (max-width: 768px) {
+  .rail { display: none; }
+
+  .copy {
+    margin-inline: 0;
+    max-width: none;
+    padding-left: clamp(22px, 5vw, 32px);
+    padding-right: clamp(22px, 5vw, 32px);
+  }
+
+  /* Foreword (ch0): no rail to clear → drop the gutter; the title lines up with the
+     copy and the banner runs full-bleed. */
+  .chapter-panel--foreword .page-body.foreword,
+  .page-body.foreword.chapter-panel--foreword { --fw-rail: 0px; }
+  .foreword__title { margin-left: clamp(22px, 5vw, 32px); }
+  .foreword__graphic { margin-left: 0; width: 100%; }
 }
