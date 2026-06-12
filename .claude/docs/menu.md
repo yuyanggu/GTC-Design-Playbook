@@ -15,13 +15,12 @@ X over the open drawer.
 logo, and the logo used to paint on top of it. So on mobile the topbar drops its own stacking
 context (`position:static`) and the logo + hamburger are pinned individually — **logo at z 44 (under
 the menu's 50, so the card slides over it), hamburger at z 60 (over the card, still the morphing X)**.
-Behind both sits a two-layer scrim so scrolling body copy fades **and** blurs out under them: a chalk
-tint (`.topbar::before`, z 42) over a gradient-masked frosted backdrop blur (`.topbar::after`, z 41,
-`backdrop-filter`, blur concentrated in the top band under the logo). `topbarScrim()` in
-`js/chapter.js` toggles `html.topbar-clear` to hide both whenever a coloured hero fills the top band
-(dark logo on colour, no text to mask). The left **rail is hidden on mobile** (≤768px) and the reader
-`.copy` runs full width with even side padding (no rail gutter); the foreword drops its `--fw-rail`
-to match. Desktop is unchanged (rail present; drawer narrow + right-aligned, so no overlap; no scrim).
+Behind both sits a soft chalk scrim (`.topbar::before`, z 42) so scrolling body copy fades out under
+them; `topbarScrim()` in `js/chapter.js` toggles `html.topbar-clear` to hide it whenever a coloured
+hero fills the top band (dark logo on colour, no text to mask). The left **rail is hidden on mobile**
+(≤768px) and the reader `.copy` runs full width with even side padding (no rail gutter); the foreword
+drops its `--fw-rail` to match. Desktop is unchanged (rail present; drawer narrow + right-aligned, so
+no overlap; no scrim).
 
 The drawer block is **duplicated verbatim** into every page that has one (the 3 chapter pages +
 `playbook.html` + `foreword.html`); the only per-page difference is each row's `data-href`.
