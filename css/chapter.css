@@ -478,6 +478,58 @@ a.toc__chapter:hover { color: var(--midnight); }
   .toc-sheet.is-open .toc-sheet__panel { transform: translateY(0); }
   /* Inside the sheet every chapter's sub-rows are simply open (no accordion). */
   .toc-sheet .toc__sub { height: auto; }
+
+  /* --- Top bar on mobile ---------------------------------------------------
+     Free the logo + hamburger from the bar's own stacking context so the open
+     menu card can sit BETWEEN them: the wide drawer slides OVER the logo
+     (z 44, under the menu's 50) while the hamburger/X stays on top (z 60, so
+     it's always tappable). To do that the bar itself must stop being a fixed
+     stacking context (→ position:static); the logo + button are pinned
+     individually instead. A soft chalk scrim (::before) sits behind both so
+     scrolling body copy fades out under them rather than clashing; topbarScrim()
+     (js/chapter.js) switches it off whenever a coloured hero fills the top band
+     (dark logo on colour, no text to mask — a chalk fade would just show as a
+     band there). */
+  .topbar {
+    position: static;
+    display: block;
+    padding: 0;
+  }
+  .topbar::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(92px + env(safe-area-inset-top));
+    z-index: 42;
+    background: linear-gradient(
+      to bottom,
+      var(--chalk) 0,
+      var(--chalk) 50%,
+      rgba(246, 242, 231, 0) 100%
+    );
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  html.topbar-clear .topbar::before { opacity: 0; }
+
+  .topbar__logo {
+    position: fixed;
+    top: clamp(20px, 2.6vh, 30px);
+    left: clamp(22px, 3vw, 44px);
+    z-index: 44;            /* above the rail (40), below the menu (50) */
+  }
+  .topbar__menu {
+    position: fixed;
+    top: clamp(20px, 2.6vh, 30px);
+    right: clamp(22px, 3vw, 44px);
+    /* Match the logo block's height (wordmark aspect 157:44) and keep the icon
+       centred, so the hamburger holds its current vertical alignment now that
+       the flex bar no longer centres the two together. */
+    height: calc(clamp(118px, 11vw, 157px) * 44 / 157);
+    z-index: 60;            /* above the menu (50) → the X stays on top + tappable */
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

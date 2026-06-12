@@ -35,6 +35,7 @@ if (window.__GTC_LOCKED__) {
   railReveal();
   urlSync(); // reflect the deepest in-view anchor in the URL as you scroll
   mobileTocBar();
+  topbarScrim();
 
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
   window.addEventListener("load", () => {
@@ -50,6 +51,7 @@ if (window.__GTC_LOCKED__) {
   railReveal();
   urlSync();
   mobileTocBar();
+  topbarScrim();
 
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => ScrollTrigger.refresh());
   window.addEventListener("load", () => {
@@ -485,6 +487,27 @@ function mobileTocBar() {
       window.location.href = row.dataset.href;
     }
   });
+}
+
+/* ---- Top-bar scrim toggle: the soft chalk fade behind the logo/hamburger (mobile,
+   CSS) keeps scrolling body copy from clashing with them — but over a coloured
+   chapter hero the top band is empty with a dark logo, so a chalk fade would read as
+   a band. Switch it off (html.topbar-clear) whenever a hero fills the top band.
+   Cheap probe of the hero rects on scroll; mirrors railReveal's top-edge logic. ---- */
+function topbarScrim() {
+  const root = document.documentElement;
+  const heroes = gsap.utils.toArray(".page-hero");
+  if (!heroes.length) return; // no hero (e.g. standalone foreword) → chalk scrim always fits
+  const PROBE = 64;           // a line just below the bar
+  const update = () => {
+    const overHero = heroes.some((h) => {
+      const r = h.getBoundingClientRect();
+      return r.top <= PROBE && r.bottom >= PROBE;
+    });
+    root.classList.toggle("topbar-clear", overHero);
+  };
+  ScrollTrigger.create({ start: 0, end: "max", onUpdate: update, onRefresh: update });
+  update();
 }
 
 /* ============================================================================

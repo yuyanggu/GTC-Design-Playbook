@@ -11,6 +11,15 @@ a `.menu__scrim` (dimmed midnight backdrop, `data-menu-close`) + a `.menu__drawe
 hamburger). **The topbar is z 60 (above the menu)** so the hamburger stays clickable + morphs to an
 X over the open drawer.
 
+**Mobile (≤768px) topbar restacking** (`css/chapter.css`): the wide drawer (`92vw`) would cover the
+logo, and the logo used to paint on top of it. So on mobile the topbar drops its own stacking
+context (`position:static`) and the logo + hamburger are pinned individually — **logo at z 44 (under
+the menu's 50, so the card slides over it), hamburger at z 60 (over the card, still the morphing X)**.
+A soft chalk scrim (`.topbar::before`, z 42) sits behind both so scrolling body copy fades out under
+them; `topbarScrim()` in `js/chapter.js` toggles `html.topbar-clear` to hide it whenever a coloured
+hero fills the top band (dark logo on colour, no text to mask). Desktop is unchanged (drawer is
+narrow + right-aligned, so no overlap).
+
 The drawer block is **duplicated verbatim** into every page that has one (the 3 chapter pages +
 `playbook.html` + `foreword.html`); the only per-page difference is each row's `data-href`.
 The drawer now has **five rows**: 00 Foreword → 01 → 02 → 03 → 04 (coming soon).
