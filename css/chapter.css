@@ -802,6 +802,15 @@ a.toc__chapter:hover { color: var(--midnight); }
 @media (max-width: 768px) {
   .rail { display: none; }
 
+  /* Size the hero to the *small* viewport (svh) — plain 100vh on mobile is the
+     largest viewport (toolbar hidden), so with the toolbar showing the hero
+     overflows and its bottom-anchored title drops below the fold. svh is stable
+     (never reflows as the toolbar slides) and keeps the title on-screen. */
+  .page-hero { min-height: 100svh; }
+  /* Lift the bottom-anchored title clear of the fixed 56px section bar now that
+     the hero ends exactly at the viewport bottom. */
+  .page-hero__title { bottom: calc(56px + clamp(16px, 3vh, 32px)); }
+
   .copy {
     margin-inline: 0;
     max-width: none;

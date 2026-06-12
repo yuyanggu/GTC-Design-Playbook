@@ -38,6 +38,12 @@ lines. A top-right `.hero-flower > .hero-flower__spin > img` (spins only with `d
 only, via `heroFlowerSpin`) sized `min(700px,70vw)` × `--flower-aspect` (ch1 `549/554`, ch2
 `230/229`, ch3 `600/600`).
 
+**Mobile (≤768px):** the hero switches to `min-height:100svh` (small viewport height) so it fits the
+visible viewport without reflowing as the browser toolbar slides — plain `100vh` is the *largest*
+viewport, which overflows and pushes the bottom-anchored title below the fold when the toolbar shows.
+The title's `bottom` is also lifted to `calc(56px + clamp(16px,3vh,32px))` to clear the fixed 56px
+`.toc-bar` now that the hero ends exactly at the viewport bottom.
+
 ## TOC (`.toc`)
 
 Pinned nav (`stickyToc`). Structure (stacked-chapter redesign, 2026-06):
